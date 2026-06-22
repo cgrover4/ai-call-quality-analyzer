@@ -381,7 +381,7 @@ function App() {
               <p className="eyebrow">Trouble density</p>
               <h2>Region-wise poor call count</h2>
             </div>
-            <span>score <= 75 or flagged</span>
+            <span>score {"<="} 75 or flagged</span>
           </div>
           <div className="chart-container">
             <Bar data={poorCallData} options={baseBarOptions} />
