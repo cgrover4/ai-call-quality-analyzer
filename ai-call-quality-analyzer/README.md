@@ -1,6 +1,6 @@
 # AI Call Quality Analyzer
 
-AI Call Quality Analyzer is a beginner-friendly FastAPI backend that simulates and analyzes VoIP call quality across geographically distributed telecom regions. It stores call sessions in SQLite, calculates a 0-100 quality score, flags network problems, and generates simple AI-style root-cause explanations using rule-based analytics.
+AI Call Quality Analyzer is a beginner-friendly full-stack application that simulates and analyzes VoIP call quality across geographically distributed telecom regions. It stores call sessions in SQLite, calculates a 0-100 quality score, flags network problems, generates simple AI-style root-cause explanations using rule-based analytics, and displays the results in a polished React dashboard.
 
 The project is designed to feel like a small carrier-grade telecommunications analytics platform while staying easy to run locally.
 
@@ -12,6 +12,9 @@ The project is designed to feel like a small carrier-grade telecommunications an
 - SQLAlchemy
 - Pydantic
 - Uvicorn
+- React
+- Vite
+- Chart.js
 
 ## Project Structure
 
@@ -23,12 +26,21 @@ ai-call-quality-analyzer/
 ├── schemas.py
 ├── analytics.py
 ├── seed_data.py
+├── frontend/
+│   ├── package.json
+│   ├── index.html
+│   └── src/
+│       ├── App.jsx
+│       ├── App.css
+│       └── main.jsx
 ├── requirements.txt
 ├── README.md
 └── .gitignore
 ```
 
 ## Setup Instructions
+
+### Backend API
 
 1. Go into the project directory:
 
@@ -63,6 +75,38 @@ ai-call-quality-analyzer/
 
 The SQLite database file `call_quality.db` is created automatically when the application starts.
 
+The backend includes CORS support for the Vite frontend at `http://localhost:5173` and `http://127.0.0.1:5173`.
+
+### Frontend Dashboard
+
+Open a second terminal while the backend is still running.
+
+1. Go into the frontend directory:
+
+   ```bash
+   cd ai-call-quality-analyzer/frontend
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Start the Vite development server:
+
+   ```bash
+   npm run dev
+   ```
+
+4. Open the dashboard:
+
+   ```text
+   http://localhost:5173
+   ```
+
+The dashboard calls the FastAPI backend at `http://127.0.0.1:8000`.
+
 ## API Endpoints
 
 | Method | Endpoint | Description |
@@ -81,14 +125,14 @@ The SQLite database file `call_quality.db` is created automatically when the app
 `GET /calls`
 
 - `skip`: number of records to skip, default `0`
-- `limit`: number of records to return, default `100`, maximum `500`
+- `limit`: number of records to return, default `100`, maximum `10000`
 - `region`: one of `us-west`, `us-east`, `eu-central`, `ap-south`
 - `status`: one of `completed`, `dropped`, `failed`
 
 `GET /analytics/problems`
 
 - `max_quality_score`: quality score threshold, default `75`
-- `limit`: number of problem calls to return, default `100`, maximum `500`
+- `limit`: number of problem calls to return, default `100`, maximum `10000`
 
 `POST /seed`
 
@@ -147,6 +191,14 @@ Find problem calls:
 curl "http://127.0.0.1:8000/analytics/problems?max_quality_score=75"
 ```
 
+Run the frontend dashboard:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
 ## Analytics Logic
 
 The application calculates a call quality score from `0` to `100` by applying deductions for:
@@ -175,8 +227,9 @@ The root-cause explanation is rule-based and written in an AI-style format so th
 
 ## Resume Bullet Points
 
-- Built a FastAPI telecommunications analytics platform for simulated VoIP call quality monitoring across distributed regions.
+- Built a full-stack telecommunications analytics platform for simulated VoIP call quality monitoring across distributed regions.
 - Designed a SQLite and SQLAlchemy data model for latency, jitter, packet loss, throughput, duration, call status, and timestamps.
 - Implemented REST APIs for call ingestion, retrieval, summary analytics, regional analytics, problem detection, and bulk seeding.
 - Created rule-based AI-style diagnostics that score call quality and explain likely root causes for degraded calls.
 - Generated realistic seed data for 1000+ VoIP sessions across `us-west`, `us-east`, `eu-central`, and `ap-south`.
+- Developed a modern React, Vite, and Chart.js dashboard with KPI cards, regional charts, poor-call distribution, seed controls, and responsive dark-theme styling.
