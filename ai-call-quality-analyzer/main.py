@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from uuid import uuid4
 
 from fastapi import Depends, FastAPI, HTTPException, Query, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -31,6 +32,14 @@ app = FastAPI(
     ),
     version="1.0.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -80,7 +89,7 @@ def create_call(call: schemas.CallCreate, db: Session = Depends(get_db)):
 @app.get("/calls", response_model=list[schemas.CallRead])
 def list_calls(
     skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=500),
+    limit: int = Query(default=100, ge=1, le=10000),
     region: schemas.Region | None = Query(default=None),
     status_filter: schemas.CallStatus | None = Query(default=None, alias="status"),
     db: Session = Depends(get_db),
@@ -130,7 +139,7 @@ def get_region_analytics(db: Session = Depends(get_db)):
 @app.get("/analytics/problems", response_model=list[schemas.ProblemCall])
 def get_problem_calls(
     max_quality_score: int = Query(default=75, ge=0, le=100),
-    limit: int = Query(default=100, ge=1, le=500),
+    limit: int = Query(default=100, ge=1, le=10000),
     db: Session = Depends(get_db),
 ):
     calls = db.query(CallSession).all()
